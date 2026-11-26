@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>苍蓝流笺 · Azure Drop</title>
+  <style>
+    :root {
+      --bg: #08101f;
+      --surface: rgba(15, 23, 42, 0.76);
+      --surface-2: rgba(20, 32, 56, 0.72);
+      --border: rgba(96, 165, 250, 0.22);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #60a5fa;
+      --ok: #34d399;
+      --warn: #fbbf24;
+      --danger: #f87171;
+    }
+    html[data-theme="light"] {
+      --bg: #f4f7fc;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-2: rgba(237, 242, 250, 0.9);
+      --border: rgba(59, 130, 246, 0.22);
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 12px 14px 24px;
+      color: var(--text);
+      background: var(--bg);
+      font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .app { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      flex-wrap: wrap; padding: 10px 14px; border-radius: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .topbar:hover {
+      border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.45));
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.12);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; flex-wrap: wrap; }
+    .brand-icon {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.28), rgba(96,165,250,0.16));
+      border: 1px solid rgba(56,189,248,0.45);
+      display: grid; place-items: center; font-size: 14px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .brand-icon:hover { transform: scale(1.06); box-shadow: 0 0 12px rgba(56, 189, 248, 0.35); }
+    .top-actions {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 500;
+      border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+    .pill:hover { transform: translateY(-1px); border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.55)); }
+    .pill.ok { border-color: rgba(52, 211, 153, 0.45); color: #34d399; background: rgba(16, 185, 129, 0.12); }
+    .pill.warn { border-color: rgba(251, 191, 36, 0.45); color: #fbbf24; background: rgba(245, 158, 11, 0.12); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 15px;
+      backdrop-filter: blur(14px);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .card:hover {
+      border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.42));
+      box-shadow: 0 8px 24px rgba(2, 6, 23, 0.24);
+    }
+    button {
+      cursor: pointer; border-radius: 999px; font-size: 12px; font-weight: 500;
+      padding: 4px 10px; border: 1px solid var(--border);
+      background: var(--surface-2); color: var(--text);
+      transition: all 0.15s ease;
+    }
+    button:hover { border-color: rgba(56, 189, 248, 0.6); background: rgba(56, 189, 248, 0.16); }
+    button.primary {
+      background: linear-gradient(135deg, rgba(56,189,248,0.34), rgba(96,165,250,0.3));
+      border-color: rgba(56,189,248,0.62); color: #f0f9ff;
+    }
+    button.danger:hover { border-color: rgba(248,113,113,0.6); background: rgba(239,68,68,0.18); color: #fecaca; }
+    .btn-rect { border-radius: 8px; padding: 5px 10px; }
+    .ver-pill { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; color: var(--muted); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .stat-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 13px;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .stat-box:hover {
+      border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.55));
+      background: var(--card-hover, rgba(31, 42, 66, 0.92));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.16);
+    }
+    .stat-label { font-size: 11.5px; color: var(--muted); }
+    .stat-val { font-size: 19px; font-weight: 700; margin-top: 2px; }
+    .section-title { font-size: 13px; font-weight: 650; margin: 0 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 8px 8px; margin: 0 -8px; border-radius: 10px;
+      border-bottom: 1px solid rgba(148,163,184,0.12);
+      transition: background 0.16s ease, border-color 0.16s ease;
+    }
+    .row:hover { background: var(--neko-hover, rgba(59, 130, 246, 0.10)); }
+    .row:last-child { border-bottom: none; }
+    .row-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .row-title { font-size: 12.8px; font-weight: 500; }
+    .row-desc { font-size: 11.5px; color: var(--muted); }
+    .row-dim { opacity: 0.48; }
+
+    .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px; gap: 2px; transition: border-color 0.16s ease; }
+    .seg:hover { border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.45)); }
+    .seg button { border: none; background: transparent; padding: 4px 10px; border-radius: 999px; font-size: 11.8px; color: var(--muted); }
+    .seg button:not(.active):hover { color: var(--text); background: var(--neko-sub-hover, rgba(59, 130, 246, 0.14)); }
+    .seg button.active { background: linear-gradient(135deg, #2563eb, #38bdf8); color: #ffffff; font-weight: 600; }
+
+    .switch { position: relative; display: inline-block; width: 38px; height: 21px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
+      background: rgba(100,116,139,0.45); transition: 0.2s;
+    }
+    .switch:hover .slider { filter: brightness(1.12); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16); }
+    .slider:before {
+      content: ""; position: absolute; width: 15px; height: 15px; left: 3px; top: 3px;
+      border-radius: 50%; background: #fff; transition: 0.2s;
+    }
+    .switch input:checked + .slider { background: linear-gradient(135deg, #38bdf8, #3b82f6); }
+    .switch input:checked + .slider:before { transform: translateX(17px); }
+
+    input[type="text"], input[type="number"], select {
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 5px 9px; font-size: 12px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    input[type="text"]:hover, input[type="number"]:hover, select:hover {
+      border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.55));
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent, #38bdf8);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+    .dir-row { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+    .dir-row input { flex: 1; min-width: 0; font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; }
+    .alert-box {
+      border: 1px solid rgba(251, 191, 36, 0.45); background: rgba(245, 158, 11, 0.09);
+      border-radius: 11px; padding: 10px 12px; font-size: 12px; color: #f59e0b;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+    .alert-box:hover { border-color: rgba(251, 191, 36, 0.72); background: rgba(245, 158, 11, 0.14); }
+    .alert-box code { background: rgba(15,23,42,0.5); padding: 1px 6px; border-radius: 5px; color: #38bdf8; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 10px; margin-top: 8px; }
+    .img-card {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 11px; overflow: hidden; display: flex; flex-direction: column;
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .img-card:hover {
+      border-color: var(--neko-border-hi, rgba(56, 189, 248, 0.6));
+      background: var(--card-hover, rgba(31, 42, 66, 0.92));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(14, 165, 233, 0.18);
+    }
+    .img-thumb {
+      height: 108px; background: rgba(2,6,23,0.45); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; cursor: pointer;
+    }
+    .img-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+    .img-thumb:hover img { transform: scale(1.04); }
+    .img-meta { padding: 8px 9px; display: flex; flex-direction: column; gap: 5px; }
+    .img-name { font-size: 11.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .img-sub { font-size: 10.8px; color: var(--muted); display: flex; justify-content: space-between; }
+    .img-actions { display: flex; gap: 4px; margin-top: 2px; }
+    .img-actions button { flex: 1; padding: 4px 6px; font-size: 11px; border-radius: 7px; }
+    .empty { text-align: center; padding: 24px 10px; color: var(--muted); font-size: 12px; }
+    .win-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .win-chip {
+      font-size: 11px; padding: 3px 8px; border-radius: 7px;
+      background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.28); color: var(--accent);
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+    .win-chip:hover {
+      border-color: rgba(56,189,248,0.65); background: rgba(56,189,248,0.22); transform: translateY(-1px);
+    }
+    .toast {
+      position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+      padding: 8px 13px; border-radius: 10px; font-size: 12px;
+      background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(56,189,248,0.5); color: #e0f2fe;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .toast.show { opacity: 1; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🌊</div>
+        <span>苍蓝流笺</span>
+        <span id="cdp-pill" class="pill warn"><span class="dot"></span>检测中</span>
+      </div>
+      <div class="top-actions">
+        <button id="btn-reinject" class="primary" onclick="reinjectCdp()" title="重新扫描并注入 Antigravity 主窗口">↻ 重连</button>
+        <button id="btnThemeToggle" onclick="toggleLightDark()" title="切换暗色/亮色主题">🌙</button>
+        <button id="agy-upd-btn" class="ver-pill" onclick="checkUpdate(true)" title="点击检查 GitHub 最新版本">v1.0.0</button>
+      </div>
+    </div>
+
+    <div id="cdp-offline-alert" class="alert-box hidden">
+      <strong>未检测到 Antigravity CDP 调试端口：</strong>启动 Antigravity 时请附带参数 <code>--remote-debugging-port=0</code>，或点击顶部「↻ 重连」。
+      <div id="cdp-err-detail" style="margin-top:4px;opacity:0.85;"></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">已插入标签 / 路径</div>
+        <div class="stat-val" id="st-paths">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">无损落盘截图</div>
+        <div class="stat-val" id="st-imgs">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">画廊累计原画体积</div>
+        <div class="stat-val" id="st-bytes">0 KB</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span>核心开关与显示形态</span>
+        <label class="switch" title="总开关"><input type="checkbox" id="cfg-enabled" onchange="savePatch({enabled:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">输入框显示形态</div>
+          <div class="row-desc">原生标签渲染为清爽的青色 <code>📁 文件夹/</code> 或 <code>文件名</code>（默认不附完整路径）；也可切为纯文本路径</div>
+        </div>
+        <div class="seg">
+          <button id="mode-mention" class="active" onclick="savePatch({insertMode:'mention'})">原生青色标签</button>
+          <button id="mode-path" onclick="savePatch({insertMode:'path'})">纯文本路径</button>
+        </div>
+      </div>
+
+      <div class="row" id="row-append-path">
+        <div class="row-info">
+          <div class="row-title">原生标签后附带完整路径</div>
+          <div class="row-desc">默认关闭（只保留清爽青色标签）；开启后会在标签后面额外附带纯文本绝对路径</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-append-path" onchange="savePatch({appendPlainPath:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">插入后自动补一个空格</div>
+          <div class="row-desc">粘贴或拖入原生标签/路径后自动在末尾追加空格，方便直接继续打字</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-trailing-space" onchange="savePatch({trailingSpace:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">拖拽文件 / 文件夹插入</div>
+          <div class="row-desc">从资源管理器拖入聊天窗口即插引用；按住 <code>Shift</code> 松手自动放行原生附件</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-drag" onchange="savePatch({dragInsertPath:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">资源管理器 Ctrl+C / Ctrl+V 文件插入</div>
+          <div class="row-desc">在聊天输入框直接粘贴已复制的本地文件或文件夹</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-paste-file" onchange="savePatch({pasteFilePath:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">内存截图无损 PNG 落盘（防糊 JPG）</div>
+          <div class="row-desc">拦截聊天框原生有损图片压缩，原字节无损落盘并自动插入原生文件引用</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-paste-img" onchange="savePatch({pasteLosslessImage:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">输入框与已发消息上方显示图片缩略图</div>
+          <div class="row-desc">粘贴、拖入及发出的图片消息上方自动保留圆角缩略图，点击弹出无损高清灯箱</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-img-preview" onchange="savePatch({showImagePreviewBar:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">顶栏路径面包屑右键菜单</div>
+          <div class="row-desc">右键右侧栏顶部路径段可一键打开所在文件夹、打开此文件夹、引用到输入框或复制路径</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-breadcrumb-menu" onchange="savePatch({breadcrumbContextMenu:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">主窗口轻提示浮层</div>
+          <div class="row-desc">拖入或无损落盘成功时在右下角显示 1.8 秒苍蓝轻提示</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="cfg-toast" onchange="savePatch({showPageToast:this.checked})" /><span class="slider"></span></label>
+      </div>
+
+      <div class="row">
+        <div class="row-info">
+          <div class="row-title">纯文本路径细节（含空格加引号 / 路径分隔符）</div>
+          <div class="row-desc">纯文本路径模式或开启附带路径时生效</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;white-space:nowrap;">
+          <label style="font-size:11.5px;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+            <input type="checkbox" id="cfg-quote" onchange="savePatch({quotePathsWithSpaces:this.checked})" />
+            <span>空格引号</span>
+          </label>
+          <select id="cfg-sep" style="flex-shrink:0;" onchange="savePatch({pathSeparator:this.value})">
+            <option value="auto">跟随系统</option>
+            <option value="posix">斜杠 /</option>
+            <option value="win32">反斜杠 \</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="flex-direction:column;align-items:stretch;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div class="row-info">
+            <div class="row-title">无损截图保存目录 & 自动清理周期</div>
+            <div class="row-desc">默认 <code>~/.gemini/antigravity/pasted-images</code>，设为 0 天关闭自动清理</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input type="number" id="cfg-cleanup" min="0" max="365" style="width:66px;" onchange="savePatch({autoCleanupDays:Number(this.value)})" />
+            <span style="font-size:11.5px;color:var(--muted);">天</span>
+          </div>
+        </div>
+        <div class="dir-row">
+          <input type="text" id="cfg-dir" />
+          <button class="btn-rect" onclick="saveDir()">保存路径</button>
+          <button class="btn-rect" onclick="openDir()">打开目录</button>
+        </div>
+      </div>
+
+      <div id="win-section" class="hidden" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(148,163,184,0.12);">
+        <div style="font-size:11.5px;color:var(--muted);">已守护主窗口：</div>
+        <div id="win-list" class="win-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span>🖼️ 无损截图画廊 <span id="gal-count" style="font-weight:400;color:var(--muted);font-size:11.5px;"></span></span>
+        <div style="display:flex;gap:6px;">
+          <button onclick="refreshState()">刷新</button>
+          <button class="danger" onclick="cleanupExpired()">清理过期</button>
+        </div>
+      </div>
+      <div id="gallery" class="gallery-grid"></div>
+      <div id="gallery-empty" class="empty hidden">还没有无损落盘截图哦~ 在聊天框里按 Ctrl+V 粘贴任意截图试试吧</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const TOKEN = new URLSearchParams(location.search).get("token") || "";
+    let state = null;
+
+    function applyLightDark(theme) {
+      const t = theme === "light" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+      const btn = document.getElementById("btnThemeToggle");
+      if (btn) {
+        btn.textContent = t === "light" ? "☀️" : "🌙";
+        btn.title = t === "light" ? "当前：亮色模式（点击切换暗色）" : "当前：暗色模式（点击切换亮色）";
+      }
+      try { localStorage.setItem("azure-drop-theme", t); } catch {}
+    }
+    function toggleLightDark() {
+      const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+      applyLightDark(cur === "light" ? "dark" : "light");
+    }
+    applyLightDark((() => { try { return localStorage.getItem("azure-drop-theme") || "dark"; } catch { return "dark"; } })());
+
+    function withToken(url) {
+      if (!TOKEN) return url;
+      return url + (url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(TOKEN);
+    }
+
+    async function api(path, opts = {}) {
+      const headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+      if (TOKEN) headers["x-sidecar-token"] = TOKEN;
+      const r = await fetch(withToken(path), Object.assign({}, opts, { headers }));
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || data.ok === false) throw new Error(data.error || ("HTTP " + r.status));
+      return data;
+    }
+
+    let toastTimer = null;
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+    window.toast = toast;
+
+    function fmtBytes(b) {
+      b = Number(b || 0);
+      if (b >= 1024 * 1024) return (b / 1024 / 1024).toFixed(2) + " MB";
+      if (b >= 1024) return Math.round(b / 1024) + " KB";
+      return b + " B";
+    }
+
+    function fmtTime(ms) {
+      if (!ms) return "";
+      const d = new Date(ms);
+      const p = (n) => String(n).padStart(2, "0");
+      return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function esc(s) {
+      return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function render() {
+      if (!state) return;
+      const { config, stats, cdp, gallery, version } = state;
+      document.getElementById("agy-upd-btn").textContent = "v" + (version || "1.0.0");
+
+      const pill = document.getElementById("cdp-pill");
+      const alertBox = document.getElementById("cdp-offline-alert");
+      if (cdp && cdp.connected) {
+        pill.className = "pill ok";
+        pill.innerHTML = `<span class="dot"></span>已护航 ${cdp.pageCount} 窗口`;
+        alertBox.classList.add("hidden");
+      } else {
+        pill.className = "pill warn";
+        pill.innerHTML = `<span class="dot"></span>CDP 未连接`;
+        alertBox.classList.remove("hidden");
+        document.getElementById("cdp-err-detail").textContent = cdp?.lastError || "";
+      }
+
+      document.getElementById("st-paths").textContent = String(stats?.pathInsertCount || 0);
+      document.getElementById("st-imgs").textContent = String(gallery?.total || 0);
+      document.getElementById("st-bytes").textContent = fmtBytes(gallery?.totalBytes || 0);
+
+      const isMention = config.insertMode !== "path";
+      document.getElementById("cfg-enabled").checked = config.enabled !== false;
+      document.getElementById("mode-mention").classList.toggle("active", isMention);
+      document.getElementById("mode-path").classList.toggle("active", !isMention);
+      document.getElementById("cfg-append-path").checked = config.appendPlainPath === true;
+      document.getElementById("cfg-trailing-space").checked = config.trailingSpace !== false;
+      document.getElementById("row-append-path").classList.toggle("row-dim", !isMention);
+      document.getElementById("cfg-drag").checked = config.dragInsertPath !== false;
+      document.getElementById("cfg-paste-file").checked = config.pasteFilePath !== false;
+      document.getElementById("cfg-paste-img").checked = config.pasteLosslessImage !== false;
+      document.getElementById("cfg-img-preview").checked = config.showImagePreviewBar !== false;
+      document.getElementById("cfg-breadcrumb-menu").checked = config.breadcrumbContextMenu !== false;
+      document.getElementById("cfg-toast").checked = config.showPageToast !== false;
+      document.getElementById("cfg-quote").checked = config.quotePathsWithSpaces !== false;
+      document.getElementById("cfg-sep").value = config.pathSeparator || "auto";
+      document.getElementById("cfg-cleanup").value = String(config.autoCleanupDays ?? 14);
+      document.getElementById("cfg-dir").value = config.imageDir || "";
+
+      const winSec = document.getElementById("win-section");
+      const winList = document.getElementById("win-list");
+      if (cdp?.pages?.length) {
+        winSec.classList.remove("hidden");
+        winList.innerHTML = cdp.pages.map((p) => `<span class="win-chip">${esc(p.title)} · v${esc(p.version)}</span>`).join("");
+      } else {
+        winSec.classList.add("hidden");
+      }
+
+      const gal = document.getElementById("gallery");
+      const empty = document.getElementById("gallery-empty");
+      const items = gallery?.items || [];
+      document.getElementById("gal-count").textContent = items.length ? `(${items.length} / ${gallery.total})` : "";
+      if (!items.length) {
+        gal.innerHTML = "";
+        empty.classList.remove("hidden");
+      } else {
+        empty.classList.add("hidden");
+        gal.innerHTML = items.map((it) => {
+          const src = withToken("/api/image/" + encodeURIComponent(it.fileName));
+          return `<div class="img-card">
+            <div class="img-thumb" title="点击插入输入框" onclick='insertImage(${JSON.stringify(it.filePath)})'>
+              <img src="${esc(src)}" loading="lazy" alt="${esc(it.fileName)}" />
+            </div>
+            <div class="img-meta">
+              <div class="img-name" title="${esc(it.filePath)}">${esc(it.fileName)}</div>
+              <div class="img-sub"><span>${fmtBytes(it.bytes)}</span><span>${fmtTime(it.mtimeMs)}</span></div>
+              <div class="img-actions">
+                <button class="primary" onclick='insertImage(${JSON.stringify(it.filePath)})'>插输入框</button>
+                <button onclick='copyPath(${JSON.stringify(it.filePath)})'>复制</button>
+                <button class="danger" onclick='deleteImage(${JSON.stringify(it.fileName)})'>删</button>
+              </div>
+            </div>
+          </div>`;
+        }).join("");
+      }
+    }
+
+    async function refreshState() {
+      try {
+        state = await api("/api/state");
+        render();
+      } catch (err) {
+        toast("刷新失败：" + err.message);
+      }
+    }
+
+    async function savePatch(patch) {
+      try {
+        const res = await api("/api/config", { method: "POST", body: JSON.stringify(patch) });
+        state.config = res.config;
+        state.cdp = res.cdp;
+        render();
+        toast("设置已热同步至主窗口");
+      } catch (err) {
+        toast("保存失败：" + err.message);
+      }
+    }
+
+    function saveDir() {
+      const dir = document.getElementById("cfg-dir").value.trim();
+      if (!dir) return toast("目录不能为空");
+      savePatch({ imageDir: dir }).then(() => refreshState());
+    }
+
+    async function openDir() {
+      try {
+        await api("/api/open-dir", { method: "POST", body: "{}" });
+        toast("已打开保存目录");
+      } catch (err) {
+        toast("打开失败：" + err.message);
+      }
+    }
+
+    async function reinjectCdp() {
+      const btn = document.getElementById("btn-reinject");
+      btn.disabled = true;
+      btn.textContent = "连接中...";
+      try {
+        const res = await api("/api/reinject", { method: "POST", body: "{}" });
+        state.cdp = res.cdp;
+        render();
+        toast(res.cdp.connected ? `已连接 ${res.cdp.pageCount} 个主窗口` : "未检测到 CDP 端口");
+      } catch (err) {
+        toast("重连失败：" + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "↻ 重连";
+      }
+    }
+
+    async function insertImage(filePath) {
+      try {
+        await api("/api/insert", { method: "POST", body: JSON.stringify({ filePath }) });
+        toast("已回插到当前聊天输入框");
+      } catch (err) {
+        toast("插入失败：" + err.message);
+      }
+    }
+
+    async function copyPath(filePath) {
+      try {
+        await navigator.clipboard.writeText(filePath);
+        toast("已复制绝对路径");
+      } catch {
+        toast(filePath);
+      }
+    }
+
+    async function deleteImage(fileName) {
+      try {
+        const res = await api("/api/image/" + encodeURIComponent(fileName), { method: "DELETE" });
+        state.gallery = res.gallery;
+        render();
+        toast("已删除 " + fileName);
+      } catch (err) {
+        toast("删除失败：" + err.message);
+      }
+    }
+
+    async function cleanupExpired() {
+      const days = Number(document.getElementById("cfg-cleanup").value || 14);
+      if (days <= 0) return toast("请先设置大于 0 的清理天数");
+      try {
+        const res = await api("/api/cleanup", { method: "POST", body: JSON.stringify({ days }) });
+        state.gallery = res.gallery;
+        render();
+        toast(`已清理 ${res.removed} 张过期图（释放 ${fmtBytes(res.freedBytes)}）`);
+      } catch (err) {
+        toast("清理失败：" + err.message);
+      }
+    }
+
+    async function checkUpdate(force) {
+      try {
+        const info = await api("/api/check-update" + (force ? "?force=1" : ""));
+        if (info.hasUpdate) toast(`发现新版本 ${info.latestVersion}（当前 ${info.currentVersion}）`);
+        else toast(`当前已是最新版本 v${info.currentVersion || state?.version || "1.0.0"}`);
+      } catch {
+        toast("暂未查询到远端 Release");
+      }
+    }
+
+    refreshState();
+    setInterval(() => {
+      if (!document.hidden) refreshState();
+    }, 5000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshState();
+    });
+  </script>
+</body>
+</html>

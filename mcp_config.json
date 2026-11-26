@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "azure-drop-nav": {
+      "command": "node",
+      "args": ["./mcp-server.mjs"]
+    }
+  }
+}
