@@ -9,11 +9,11 @@
 **Zero `app.asar` patching · Zero Token prefix tax · Native drag-and-drop mention pills & lossless PNG clipboard capture for Google Antigravity**
 
 <p>
-  <img src="https://img.shields.io/badge/Google_Antigravity-Native_Sidecar-38bdf8?style=flat-square&labelColor=1e293b" alt="Antigravity">
-  <img src="https://img.shields.io/badge/Node.js-%3E%3D22.0.0-10b981?style=flat-square&labelColor=1e293b" alt="Node.js">
-  <img src="https://img.shields.io/badge/Dependencies-Zero-06b6d4?style=flat-square&labelColor=1e293b" alt="Zero Deps">
-  <img src="https://img.shields.io/badge/Turn--0_Tokens-0-8b5cf6?style=flat-square&labelColor=1e293b" alt="Zero Prefix Tax">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-6366f1?style=flat-square&labelColor=1e293b" alt="License"></a>
+  <img src="assets/badges/antigravity.svg" alt="Antigravity">
+  <img src="assets/badges/nodejs.svg" alt="Node.js">
+  <img src="assets/badges/zero-deps.svg" alt="Zero Deps">
+  <img src="assets/badges/zero-tokens.svg" alt="Zero Prefix Tax">
+  <a href="./LICENSE"><img src="assets/badges/license-mit.svg" alt="License"></a>
 </p>
 
 </div>
