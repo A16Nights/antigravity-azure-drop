@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "pluginRoot": ".",
+  "categories": [
+    "productivity",
+    "developer-tools"
+  ],
+  "tags": [
+    "drag-and-drop",
+    "clipboard",
+    "lossless-png",
+    "file-path",
+    "cdp",
+    "sidecar",
+    "azure-suite"
+  ],
+  "minAntigravityVersion": "2.32.0",
+  "platforms": [
+    "win32",
+    "darwin",
+    "linux"
+  ]
+}
