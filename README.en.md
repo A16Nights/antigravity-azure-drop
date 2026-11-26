@@ -32,6 +32,7 @@ A lightweight, zero-dependency Sidecar input enhancer for **Google Antigravity**
 4. **Composer & Sent-Message Image Thumbnails + Lossless Lightbox (Toggleable)**
    - Pasting, dropping, or re-inserting images automatically displays native-style thumbnails above the composer input, and keeps matching right-aligned thumbnails above sent user message bubbles without duplicating native attachments.
    - Click any thumbnail to open a full-resolution lossless lightbox (wheel zoom, pan, double-click 1:1 toggle, multi-image navigation, copy path, open in system viewer); clicking `×` on a composer thumbnail removes the matching editor mention.
+   - **Streaming Previews & Background Idle Sleep (`v1.0.1+`)**: Local thumbnails and lightbox images stream via short-lived signed Sidecar HTTP tickets instead of pushing multi-megabyte Base64 strings through CDP `Runtime.evaluate`; text-only messages skip forced layout checks, and polling/observers automatically sleep while the window is hidden.
 5. **Top File-Path Breadcrumb Context Menu (Toggleable)**
    - Right-click any segment of the side-pane file path breadcrumb (`File path breadcrumbs`) to reference it into the chat input, open the folder directly, reveal in system file manager, or copy its full local path.
 6. **Sidecar Gallery & Auto-Cleanup**

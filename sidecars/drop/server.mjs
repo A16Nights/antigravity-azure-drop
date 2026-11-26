@@ -25,6 +25,7 @@ import {
   loadStats,
   listSavedImages,
   resolveSafeImagePath,
+  resolvePreviewTicket,
   deleteSavedImage,
   cleanupOldImages,
   inspectLocalPaths,
@@ -44,7 +45,7 @@ const TOKEN = (
   ""
 ).trim();
 
-const injector = new AzureDropInjector();
+const injector = new AzureDropInjector({ sidecarPort: PORT, sidecarToken: TOKEN });
 injector.start();
 
 function isAllowedLocalOrigin(req) {
@@ -231,6 +232,29 @@ const server = http.createServer(async (req, res) => {
       const name = decodeURIComponent(pathname.slice("/api/image/".length));
       const del = deleteSavedImage(name);
       return sendJson(res, 200, { ok: true, ...del, gallery: listSavedImages(60) });
+    }
+
+    if (req.method === "GET" && pathname.startsWith("/api/preview/")) {
+      const ticketId = decodeURIComponent(pathname.slice("/api/preview/".length));
+      const item = resolvePreviewTicket(ticketId);
+      if (!item) {
+        res.writeHead(404);
+        res.end("Not found");
+        return;
+      }
+      res.writeHead(200, {
+        "Content-Type": item.mime,
+        "Content-Length": item.bytes,
+        "Cache-Control": "private, max-age=3600",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+      });
+      const stream = fs.createReadStream(item.fullPath);
+      stream.on("error", () => {
+        if (!res.headersSent) res.writeHead(500);
+        res.end();
+      });
+      stream.pipe(res);
+      return;
     }
 
     if (req.method === "GET" && pathname.startsWith("/api/image/")) {
