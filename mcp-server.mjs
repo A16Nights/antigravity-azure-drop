@@ -27,7 +27,7 @@ async function handleMessage(msg) {
           result: {
             protocolVersion: params?.protocolVersion || PROTOCOL_VERSION,
             capabilities: { tools: {}, resources: {} },
-            serverInfo: { name: "azure-drop-nav", version: "1.0.1" }
+            serverInfo: { name: "azure-drop-nav", version: "1.0.2" }
           }
         });
         return;

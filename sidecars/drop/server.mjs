@@ -19,6 +19,8 @@ import {
 } from "../../lib/sidebar-nav.mjs";
 import { handleAzureThemeHttp } from "../../lib/azure-theme.mjs";
 import { injectAzureUiKit } from "../../lib/azure-ui-kit.mjs";
+import { handleAzureOnboardingHttp, injectAzureOnboarding } from "../../lib/azure-onboarding.mjs";
+import { DROP_ONBOARDING_GUIDE } from "./onboarding-guide.mjs";
 import {
   loadConfig,
   saveConfig,
@@ -141,7 +143,7 @@ const server = http.createServer(async (req, res) => {
         "Content-Type": "text/html; charset=utf-8",
         "Cache-Control": "no-store",
       });
-      res.end(injectAzureUiKit(injectSidebarToggleWidget(html, "azure-drop"), "azure-drop"));
+      res.end(injectAzureOnboarding(injectAzureUiKit(injectSidebarToggleWidget(html, "azure-drop"), "azure-drop"), "azure-drop", DROP_ONBOARDING_GUIDE));
       return;
     }
 
@@ -152,6 +154,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (await handleAzureThemeHttp(req, res)) return;
+    if (await handleAzureOnboardingHttp(req, res, "azure-drop", DROP_ONBOARDING_GUIDE.version)) return;
 
     if (req.method === "GET" && pathname === "/api/check-update") {
       const force = url.searchParams.get("force") === "1";

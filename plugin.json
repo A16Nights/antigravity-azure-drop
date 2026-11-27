@@ -1,8 +1,8 @@
 {
   "name": "azure-drop",
-  "displayName": "苍蓝流笺 · Azure Drop",
-  "version": "1.0.1",
-  "description": "苍蓝流笺（Azure Drop）— 零 app.asar 侵入、零 Token 前缀税的 Antigravity 输入体验增强插件：纯 Sidecar 经本机 CDP 注入主窗口，支持拖拽与 Ctrl+C/V 文件/文件夹直插清爽原生青色标签（可选附带完整路径或切纯路径，按住 Shift 放行原生附件）、内存截图无损 PNG 落盘、输入框与已发消息上方图片缩略图与无损高清灯箱预览、顶栏路径面包屑右键菜单（打开所在文件夹/打开此文件夹/引用/复制路径），附带苍蓝玻璃截图画廊控制台。",
+  "displayName": "苍蓝流笺——拖拽发图与原生文件标签",
+  "version": "1.0.2",
+  "description": "苍蓝流笺——拖拽发图与原生文件标签（Azure Drop）：零 app.asar 侵入、零 Token 前缀税的 Antigravity 输入体验增强插件：纯 Sidecar 经本机 CDP 注入主窗口，支持拖拽与 Ctrl+C/V 文件/文件夹直插清爽原生青色标签（可选附带完整路径或切纯路径，按住 Shift 放行原生附件）、内存截图无损 PNG 落盘、输入框与已发消息上方图片缩略图与无损高清灯箱预览、顶栏路径面包屑右键菜单（打开所在文件夹/打开此文件夹/引用/复制路径），附带苍蓝玻璃截图画廊控制台；内置首次使用交互式新手引导与真实控件定位高亮。",
   "logo": "assets/logo.svg",
   "author": {
     "name": "A16Nights",
